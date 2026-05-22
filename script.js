@@ -1,24 +1,24 @@
-// Список сложных логических загадок
+// ---------- 5 ОЧЕНЬ СЛОЖНЫХ ЗАГАДОК ----------
 const riddles = [
     {
-        text: "Перед вами лежат четыре карты. Известно, что на одной стороне карточек всегда цифра, а на другой — буква русского алфавита. Вам говорят: 'Если на одной стороне четная цифра, то на другой — согласная буква'. Какие карты минимально нужно перевернуть, чтобы подтвердить или опровергнуть это утверждение? (Ответ напишите в формате: цифра, буква через запятую, например: 2, А)",
-        correct: "2, а"
-    },
-    {
-        text: "Что можно разбить, не прикасаясь к нему руками?",
+        text: "Что можно разбить, не прикасаясь и не роняя?",
         correct: "тишину"
     },
     {
-        text: "Что становится больше, если его поставить вверх ногами?",
-        correct: "6"
+        text: "Что становится легче, когда его увеличивают?",
+        correct: "дыра"
     },
     {
-        text: "Из какого крана нельзя напиться?",
-        correct: "подъёмного"
+        text: "Что может путешествовать по всему миру, оставаясь в одном углу?",
+        correct: "марка"   // почтовая марка
     },
     {
-        text: "Что можно держать, не касаясь его руками?",
-        correct: "дыхание"
+        text: "У вас есть 9 монет, одна фальшивая (легче). За какое минимальное количество взвешиваний на чашечных весах без гирь вы её найдёте? (Ответ числом)",
+        correct: "2"
+    },
+    {
+        text: "Что можно взять в левую руку, но нельзя в правую?",
+        correct: "правый локоть"
     }
 ];
 
@@ -49,7 +49,7 @@ function updateProgress() {
         if (finalDiv) finalDiv.style.display = 'block';
         const link = document.getElementById('messengerLink');
         if (link) {
-            // ⚠️ ЗАМЕНИТЕ НА РЕАЛЬНУЮ ССЫЛКУ НА КАНАЛ В МЕССЕНДЖЕРЕ MAX
+            // !!! ЗАМЕНИТЕ НА РЕАЛЬНУЮ ССЫЛКУ НА КАНАЛ В МЕССЕНДЖЕРЕ MAX !!!
             link.href = 'https://max.ru/ваш_канал';
             link.textContent = 'Открыть канал в Макс →';
         }
@@ -60,11 +60,9 @@ function updateProgress() {
 
 function checkAnswer(index, userAnswer) {
     if (solvedStatus[index]) return true;
-    
-    const normalizedAnswer = userAnswer.trim().toLowerCase();
-    const correctAnswer = riddles[index].correct;
-    
-    if (normalizedAnswer === correctAnswer) {
+    const normalized = userAnswer.trim().toLowerCase();
+    const correct = riddles[index].correct;
+    if (normalized === correct) {
         solvedStatus[index] = true;
         saveProgress();
         renderRiddles();
@@ -94,15 +92,12 @@ function renderRiddles() {
         if (!isSolved) {
             const answerDiv = document.createElement('div');
             answerDiv.className = 'answer-area';
-            
             const input = document.createElement('input');
             input.type = 'text';
             input.placeholder = 'Введите ответ';
             input.autocomplete = 'off';
-            
             const checkBtn = document.createElement('button');
             checkBtn.innerText = 'Проверить';
-            
             const wrongMsgDiv = document.createElement('div');
             wrongMsgDiv.className = 'wrong-message';
             
@@ -117,12 +112,8 @@ function renderRiddles() {
                     }, 1500);
                 }
             });
-            
             input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    checkBtn.click();
-                }
+                if (e.key === 'Enter') checkBtn.click();
             });
             
             answerDiv.appendChild(input);
@@ -135,11 +126,58 @@ function renderRiddles() {
             solvedMark.innerText = '✓ Решено';
             card.appendChild(solvedMark);
         }
-        
         container.appendChild(card);
     }
 }
 
+// ---------- АДМИН-МЕНЮ (вызов из консоли) ----------
+window.adminMenu = function() {
+    const oldMenu = document.getElementById('adminMenuPanel');
+    if (oldMenu) oldMenu.remove();
+
+    const menuDiv = document.createElement('div');
+    menuDiv.id = 'adminMenuPanel';
+    menuDiv.innerHTML = `
+        <div style="background: #1e2a3e; color: white; border-radius: 20px; padding: 15px; position: fixed; bottom: 20px; right: 20px; z-index: 9999; width: 260px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); font-family: system-ui; border: 1px solid #3b82f6;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <strong style="font-size: 1rem;">🔧 Админ-панель</strong>
+                <button id="closeAdminMenu" style="background: none; border: none; color: white; font-size: 1.4rem; cursor: pointer;">&times;</button>
+            </div>
+            <button id="adminResetAll" style="width: 100%; margin-bottom: 8px; background: #c62828; color: white; border: none; padding: 8px; border-radius: 40px; cursor: pointer;">🔄 Сбросить ВСЁ (1+2 этап)</button>
+            <button id="adminShowAnswers" style="width: 100%; margin-bottom: 8px; background: #2c5f8a; color: white; border: none; padding: 8px; border-radius: 40px; cursor: pointer;">📖 Показать ответы (консоль)</button>
+            <button id="adminResetRiddles" style="width: 100%; margin-bottom: 8px; background: #ff9800; color: white; border: none; padding: 8px; border-radius: 40px; cursor: pointer;">🗑️ Сбросить только загадки (2 этап)</button>
+            <button id="adminResetLevel1" style="width: 100%; background: #5c6bc0; color: white; border: none; padding: 8px; border-radius: 40px; cursor: pointer;">📌 Сбросить 1 этап (гранит)</button>
+        </div>
+    `;
+    document.body.appendChild(menuDiv);
+
+    document.getElementById('closeAdminMenu').onclick = () => menuDiv.remove();
+    document.getElementById('adminResetAll').onclick = () => {
+        localStorage.removeItem('level1_complete');
+        localStorage.removeItem('riddlesProgress');
+        alert('Полный сброс выполнен. Страница перезагрузится.');
+        location.reload();
+    };
+    document.getElementById('adminShowAnswers').onclick = () => {
+        console.clear();
+        console.log('%c=== ОТВЕТЫ НА ЗАГАДКИ (2 этап) ===', 'color: #2c5f8a; font-size: 14px;');
+        riddles.forEach((r, i) => console.log(`${i+1}: ${r.text} -> "${r.correct}"`));
+        alert('Ответы выведены в консоль (F12)');
+    };
+    document.getElementById('adminResetRiddles').onclick = () => {
+        localStorage.removeItem('riddlesProgress');
+        alert('Прогресс загадок сброшен. Страница перезагрузится.');
+        location.reload();
+    };
+    document.getElementById('adminResetLevel1').onclick = () => {
+        localStorage.removeItem('level1_complete');
+        alert('Первый этап сброшен. Перезагрузите страницу.');
+        location.reload();
+    };
+};
+
+console.log('Админ-меню готово. Введите в консоли: adminMenu()');
+// Инициализация страницы
 document.addEventListener('DOMContentLoaded', () => {
     loadProgress();
     renderRiddles();
