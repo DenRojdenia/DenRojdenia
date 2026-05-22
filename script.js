@@ -50,7 +50,7 @@ function updateProgress() {
         const link = document.getElementById('messengerLink');
         if (link) {
             // !!! ЗАМЕНИТЕ НА РЕАЛЬНУЮ ССЫЛКУ НА КАНАЛ В МЕССЕНДЖЕРЕ MAX !!!
-            link.href = 'https://max.ru/ваш_канал';
+            link.href = 'https://max.ru/join/4iZVyqiP0gqRg_5fEbgUNtCmUIcKoLas5E_l9hAzkmU';
             link.textContent = 'Открыть канал в Макс →';
         }
     } else {
