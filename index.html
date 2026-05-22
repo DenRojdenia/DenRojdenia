@@ -1,1 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Квест | Этап 1</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🔍 Привет!</h1>
+            <p class="subtitle">Чтобы начать, ответь на загадку:</p>
+            <div class="riddle-text">
+                <p>«Меня в горах найдешь,<br>В строительстве я нужен,<br>Я твёрд и крепок, словно щит,<br>Меня не сломят стужи.<br>Что это?»</p>
+            </div>
+            <input type="text" id="answerInput" placeholder="Введите ответ" autocomplete="off">
+            <button id="checkBtn">Проверить</button>
+            <div id="message" class="message"></div>
+        </div>
+    </div>
+    <script>
+        const correctAnswer = "гранит";
+        const checkBtn = document.getElementById('checkBtn');
+        const answerInput = document.getElementById('answerInput');
+        const messageDiv = document.getElementById('message');
 
+        function checkAnswer() {
+            const userAnswer = answerInput.value.trim().toLowerCase();
+            if (userAnswer === correctAnswer) {
+                messageDiv.innerHTML = '✅ Верно! Ищи QR‑код на стеллаже с моими книгами (за книгами). Сканируй – и переходи к следующему этапу.';
+                messageDiv.style.color = '#2e7d32';
+                checkBtn.disabled = true;
+                answerInput.disabled = true;
+                // сохраняем факт прохождения (можно опционально)
+                localStorage.setItem('level1_complete', 'true');
+            } else {
+                messageDiv.innerHTML = '❌ Не угадал. Попробуй ещё раз!';
+                messageDiv.style.color = '#c62828';
+                answerInput.value = '';
+                answerInput.focus();
+            }
+        }
+
+        checkBtn.addEventListener('click', checkAnswer);
+        answerInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkAnswer();
+        });
+
+        // Если уже проходил – показать сообщение
+        if (localStorage.getItem('level1_complete') === 'true') {
+            messageDiv.innerHTML = '✅ Ты уже отгадал загадку. Ищи QR‑код на стеллаже с книгами!';
+            messageDiv.style.color = '#2e7d32';
+            checkBtn.disabled = true;
+            answerInput.disabled = true;
+        }
+    </script>
+</body>
+</html>
