@@ -106,7 +106,6 @@ button:disabled {
     background: #f8fafc;
 }
 
-/* Стили для списка загадок (level2) */
 .riddles-container {
     margin: 20px 0;
 }
@@ -133,36 +132,21 @@ button:disabled {
     color: #1e3a5f;
 }
 
-.options {
+.answer-area {
     display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin: 15px 0 10px;
+    gap: 10px;
+    margin-top: 12px;
 }
 
-.option-btn {
-    background: white;
-    border: 1px solid #bbd1e6;
-    border-radius: 60px;
-    padding: 8px 18px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #1f4a76;
-    cursor: pointer;
-    transition: all 0.1s;
-    flex: 1 0 auto;
-    text-align: center;
+.answer-area input {
+    flex: 1;
+    margin-bottom: 0;
 }
 
-.option-btn:hover {
-    background: #e6f0ff;
-    border-color: #3b82f6;
-}
-
-.option-btn.correct-highlight {
-    background: #2e7d32;
-    color: white;
-    border-color: #2e7d32;
+.answer-area button {
+    flex: 0 0 auto;
+    width: auto;
+    padding: 0 20px;
 }
 
 .solved-mark {
@@ -173,6 +157,12 @@ button:disabled {
     padding: 5px 12px;
     font-size: 0.75rem;
     font-weight: bold;
+    margin-top: 8px;
+}
+
+.wrong-message {
+    color: #c62828;
+    font-size: 0.8rem;
     margin-top: 8px;
 }
 
@@ -231,8 +221,12 @@ button:disabled {
     h1 {
         font-size: 1.6rem;
     }
-    .option-btn {
-        padding: 6px 12px;
-        font-size: 0.8rem;
+    .answer-area {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .answer-area button {
+        width: 100%;
+        justify-content: center;
     }
 }
