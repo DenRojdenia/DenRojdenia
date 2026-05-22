@@ -1,35 +1,29 @@
-// Список загадок (сложные логические)
+// Список сложных логических загадок
 const riddles = [
     {
+        text: "Перед вами лежат четыре карты. Известно, что на одной стороне карточек всегда цифра, а на другой — буква русского алфавита. Вам говорят: 'Если на одной стороне четная цифра, то на другой — согласная буква'. Какие карты минимально нужно перевернуть, чтобы подтвердить или опровергнуть это утверждение? (Ответ напишите в формате: цифра, буква через запятую, например: 2, А)",
+        correct: "2, а"
+    },
+    {
         text: "Что можно разбить, не прикасаясь к нему руками?",
-        options: ["Обещание", "Стекло", "Тишину", "Сердце"],
-        correct: "Тишину"
+        correct: "тишину"
     },
     {
         text: "Что становится больше, если его поставить вверх ногами?",
-        options: ["Число 6", "Число 8", "Число 9", "Число 0"],
-        correct: "Число 6"
-    },
-    {
-        text: "У человека — одно, у вороны — два, у медведя — ни одного. Что это?",
-        options: ["Нога", "Глаз", "Буква 'О'", "Клюв"],
-        correct: "Буква 'О'"
-    },
-    {
-        text: "Что можно держать, не касаясь его руками?",
-        options: ["Дыхание", "Мысль", "Слово", "Разговор"],
-        correct: "Дыхание"
+        correct: "6"
     },
     {
         text: "Из какого крана нельзя напиться?",
-        options: ["Из подъёмного", "Из водопроводного", "Из пожарного", "Из крана с водой"],
-        correct: "Из подъёмного"
+        correct: "подъёмного"
+    },
+    {
+        text: "Что можно держать, не касаясь его руками?",
+        correct: "дыхание"
     }
 ];
 
 let solvedStatus = [false, false, false, false, false];
 
-// Загрузка сохранённого прогресса
 function loadProgress() {
     const saved = localStorage.getItem('riddlesProgress');
     if (saved) {
@@ -40,27 +34,23 @@ function loadProgress() {
     }
 }
 
-// Сохранение прогресса
 function saveProgress() {
     localStorage.setItem('riddlesProgress', JSON.stringify(solvedStatus));
 }
 
-// Подсчёт решённых и обновление прогресс-бара
 function updateProgress() {
     const solvedCount = solvedStatus.filter(v => v === true).length;
     const percent = (solvedCount / riddles.length) * 100;
     const progressBar = document.getElementById('progressBar');
     if (progressBar) progressBar.style.width = percent + '%';
     
-    // Показать финальное сообщение, если все решены
     const finalDiv = document.getElementById('finalMessage');
     if (solvedCount === riddles.length) {
         if (finalDiv) finalDiv.style.display = 'block';
-        // Установка ссылки на мессенджер Макс (замените на реальную)
         const link = document.getElementById('messengerLink');
         if (link) {
-            // ⚠️ ВСТАВЬТЕ РЕАЛЬНУЮ ССЫЛКУ НА КАНАЛ В МЕССЕНДЖЕРЕ MAX
-            link.href = 'https://max.ru/ваш_канал';   // ЗАМЕНИТЕ НА РЕАЛЬНУЮ
+            // ⚠️ ЗАМЕНИТЕ НА РЕАЛЬНУЮ ССЫЛКУ НА КАНАЛ В МЕССЕНДЖЕРЕ MAX
+            link.href = 'https://max.ru/ваш_канал';
             link.textContent = 'Открыть канал в Макс →';
         }
     } else {
@@ -68,7 +58,22 @@ function updateProgress() {
     }
 }
 
-// Отрисовка всех загадок
+function checkAnswer(index, userAnswer) {
+    if (solvedStatus[index]) return true;
+    
+    const normalizedAnswer = userAnswer.trim().toLowerCase();
+    const correctAnswer = riddles[index].correct;
+    
+    if (normalizedAnswer === correctAnswer) {
+        solvedStatus[index] = true;
+        saveProgress();
+        renderRiddles();
+        updateProgress();
+        return true;
+    }
+    return false;
+}
+
 function renderRiddles() {
     const container = document.getElementById('riddlesContainer');
     if (!container) return;
@@ -87,18 +92,43 @@ function renderRiddles() {
         card.appendChild(questionDiv);
         
         if (!isSolved) {
-            const optionsDiv = document.createElement('div');
-            optionsDiv.className = 'options';
-            r.options.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.innerText = opt;
-                btn.className = 'option-btn';
-                btn.addEventListener('click', (function(idx, selected) {
-                    return function() { checkAnswer(idx, selected); };
-                })(i, opt));
-                optionsDiv.appendChild(btn);
+            const answerDiv = document.createElement('div');
+            answerDiv.className = 'answer-area';
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = 'Введите ответ';
+            input.autocomplete = 'off';
+            
+            const checkBtn = document.createElement('button');
+            checkBtn.innerText = 'Проверить';
+            
+            const wrongMsgDiv = document.createElement('div');
+            wrongMsgDiv.className = 'wrong-message';
+            
+            checkBtn.addEventListener('click', () => {
+                const answer = input.value;
+                if (!checkAnswer(i, answer)) {
+                    wrongMsgDiv.innerText = '❌ Неверно, попробуй ещё раз!';
+                    input.value = '';
+                    input.focus();
+                    setTimeout(() => {
+                        wrongMsgDiv.innerText = '';
+                    }, 1500);
+                }
             });
-            card.appendChild(optionsDiv);
+            
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    checkBtn.click();
+                }
+            });
+            
+            answerDiv.appendChild(input);
+            answerDiv.appendChild(checkBtn);
+            card.appendChild(answerDiv);
+            card.appendChild(wrongMsgDiv);
         } else {
             const solvedMark = document.createElement('div');
             solvedMark.className = 'solved-mark';
@@ -110,49 +140,6 @@ function renderRiddles() {
     }
 }
 
-// Проверка ответа
-function checkAnswer(riddleIndex, selectedAnswer) {
-    if (solvedStatus[riddleIndex]) return;
-    
-    const correct = riddles[riddleIndex].correct;
-    if (selectedAnswer === correct) {
-        solvedStatus[riddleIndex] = true;
-        saveProgress();
-        renderRiddles();
-        updateProgress();
-        
-        // Небольшая визуальная вспышка
-        const cards = document.querySelectorAll('.riddle-card');
-        if (cards[riddleIndex]) {
-            cards[riddleIndex].style.transition = '0.2s';
-            cards[riddleIndex].style.backgroundColor = '#d9f0d5';
-            setTimeout(() => {
-                if (cards[riddleIndex]) cards[riddleIndex].style.backgroundColor = '';
-            }, 300);
-        }
-    } else {
-        // Эффект неверного ответа
-        const btns = document.querySelectorAll(`.riddle-card[data-index='${riddleIndex}'] .option-btn`);
-        btns.forEach(btn => {
-            if (btn.innerText === selectedAnswer) {
-                btn.style.backgroundColor = '#ffdddd';
-                btn.style.borderColor = '#c62828';
-                setTimeout(() => {
-                    btn.style.backgroundColor = '';
-                    btn.style.borderColor = '';
-                }, 400);
-            }
-        });
-        // Тряска карточки
-        const card = document.querySelector(`.riddle-card[data-index='${riddleIndex}']`);
-        if (card) {
-            card.style.transform = 'translateX(4px)';
-            setTimeout(() => { if(card) card.style.transform = ''; }, 150);
-        }
-    }
-}
-
-// Инициализация при загрузке страницы level2.html
 document.addEventListener('DOMContentLoaded', () => {
     loadProgress();
     renderRiddles();
