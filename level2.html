@@ -1,1 +1,28 @@
-
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Квест | Логические загадки</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🧩 Логический этап</h1>
+            <p class="subtitle">Реши все 5 загадок. Ошибаться можно, но каждая загадка ждёт правильного ответа.</p>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+            </div>
+            <div id="riddlesContainer" class="riddles-container"></div>
+            <div id="finalMessage" class="final-message" style="display: none;">
+                <h2>🎉 Ты справился!</h2>
+                <p>Финальная подсказка в канале <strong>Макс (Max)</strong>:</p>
+                <a href="#" id="messengerLink" target="_blank" rel="noopener noreferrer">Перейти в канал →</a>
+                <p class="prize">🏆 Главный приз – три брелка:<br>🔨 кувалда, молоток и гаечный ключ! Забери в камоде.</p>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
