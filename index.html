@@ -20,7 +20,7 @@
         </div>
     </div>
     <script>
-        const correctAnswer = "гранит";
+        const correctAnswer = "гранит" or "Гранит";
         const checkBtn = document.getElementById('checkBtn');
         const answerInput = document.getElementById('answerInput');
         const messageDiv = document.getElementById('message');
@@ -28,7 +28,7 @@
         function checkAnswer() {
             const userAnswer = answerInput.value.trim().toLowerCase();
             if (userAnswer === correctAnswer) {
-                messageDiv.innerHTML = '✅ Верно! Ищи QR‑код на стеллаже с моими книгами (за книгами). Сканируй – и переходи к следующему этапу.';
+                messageDiv.innerHTML = '✅ Верно! Ищи QR‑код,в этом тебе поможет ответ на загадку). Сканируй – и переходи к следующему этапу.';
                 messageDiv.style.color = '#2e7d32';
                 checkBtn.disabled = true;
                 answerInput.disabled = true;
@@ -47,7 +47,7 @@
         });
 
         if (localStorage.getItem('level1_complete') === 'true') {
-            messageDiv.innerHTML = '✅ Ты уже отгадал загадку. Ищи QR‑код на стеллаже с книгами!';
+            messageDiv.innerHTML = '✅ Ты уже отгадал загадку. Ищи QR‑код с помощью ответа на загадку!';
             messageDiv.style.color = '#2e7d32';
             checkBtn.disabled = true;
             answerInput.disabled = true;
