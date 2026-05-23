@@ -20,7 +20,7 @@
         </div>
     </div>
     <script>
-        const correctAnswer = "гранит" or "Гранит";
+        const correctAnswer = "гранит";  // все проверяется через toLowerCase()
         const checkBtn = document.getElementById('checkBtn');
         const answerInput = document.getElementById('answerInput');
         const messageDiv = document.getElementById('message');
@@ -28,7 +28,7 @@
         function checkAnswer() {
             const userAnswer = answerInput.value.trim().toLowerCase();
             if (userAnswer === correctAnswer) {
-                messageDiv.innerHTML = '✅ Верно! Ищи QR‑код,в этом тебе поможет ответ на загадку). Сканируй – и переходи к следующему этапу.';
+                messageDiv.innerHTML = '✅ Верно! Ищи QR‑код, в этом тебе поможет ответ на загадку. Сканируй – и переходи к следующему этапу.';
                 messageDiv.style.color = '#2e7d32';
                 checkBtn.disabled = true;
                 answerInput.disabled = true;
@@ -53,9 +53,8 @@
             answerInput.disabled = true;
         }
 
-        // ----- АДМИН-МЕНЮ (вызов из консоли: adminMenu() ) -----
+        // ----- АДМИН-МЕНЮ -----
         window.adminMenu = function() {
-            // Удаляем старое меню, если есть
             const oldMenu = document.getElementById('adminMenuPanel');
             if (oldMenu) oldMenu.remove();
 
@@ -75,10 +74,7 @@
             `;
             document.body.appendChild(menuDiv);
 
-            // Закрытие
             document.getElementById('closeAdminMenu').onclick = () => menuDiv.remove();
-
-            // Кнопки
             document.getElementById('adminResetAll').onclick = () => {
                 localStorage.removeItem('level1_complete');
                 localStorage.removeItem('riddlesProgress');
@@ -86,7 +82,6 @@
                 location.reload();
             };
             document.getElementById('adminShowAnswers').onclick = () => {
-                // Ответы для загадок (если есть script.js, иначе сообщим)
                 if (typeof riddles !== 'undefined') {
                     console.clear();
                     console.log('%c=== ОТВЕТЫ НА ЗАГАДКИ (2 этап) ===', 'color: #2c5f8a; font-size: 14px;');
@@ -107,7 +102,6 @@
                 location.reload();
             };
         };
-        // Чтобы меню можно было открыть из консоли в любой момент
         console.log('Админ-меню готово. Введите в консоли: adminMenu()');
     </script>
 </body>
