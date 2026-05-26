@@ -1,6 +1,5 @@
-// ========== УНИВЕРСАЛЬНАЯ АДМИН-ПАНЕЛЬ ==========
-// Работает на index.html, level2.html, clicker.html
-// Вызов: через консоль adminMenu() или секретный жест (долгое нажатие на заголовок h1)
+// ========== УНИВЕРСАЛЬНАЯ АДМИН-ПАНЕЛЬ (исправленная) ==========
+// Вызов: через консоль adminMenu() или долгое нажатие (8 сек) на заголовок h1
 
 (function() {
     // Функция для создания/показа меню
@@ -23,9 +22,9 @@
                 </div>
 
                 <div style="margin-bottom: 12px; border-top: 1px solid #555; padding-top: 8px;">
-                    <strong>📖 Прогресс и ответы</strong>
-                    <button id="adminShowAnswers" style="width:100%; margin-bottom:5px; background:#2c5f8a; padding:6px; border-radius:40px;">📖 Показать ответы (консоль)</button>
-                    <button id="adminShowProgress" style="width:100%; background:#3f51b5; padding:6px; border-radius:40px;">📊 Показать прогресс (консоль)</button>
+                    <strong>📖 Ответы и прогресс</strong>
+                    <button id="adminShowAnswers" style="width:100%; margin-bottom:5px; background:#2c5f8a; padding:6px; border-radius:40px;">📖 Показать ответы на загадки</button>
+                    <button id="adminShowProgress" style="width:100%; background:#3f51b5; padding:6px; border-radius:40px;">📊 Показать общий прогресс</button>
                 </div>
 
                 <div style="margin-bottom: 12px; border-top: 1px solid #555; padding-top: 8px;">
@@ -61,49 +60,64 @@
         `;
         document.body.appendChild(menuDiv);
 
-        // Закрытие
         document.getElementById('closeAdminMenu').onclick = () => menuDiv.remove();
 
-        // --- Функции ---
-        // Сброс всего
+        // --- Сброс всего ---
         document.getElementById('adminResetAll').onclick = () => {
-            localStorage.clear();
-            alert('Полный сброс выполнен. Страница перезагрузится.');
-            location.reload();
-        };
-        // Показать ответы на загадки
-        document.getElementById('adminShowAnswers').onclick = () => {
-            if (typeof riddles !== 'undefined') {
-                console.clear();
-                console.log('%c=== ОТВЕТЫ НА ЗАГАДКИ (2 этап) ===', 'color: #2c5f8a; font-size: 14px;');
-                riddles.forEach((r, i) => console.log(`${i+1}: ${r.text} -> "${r.correct}"`));
-                alert('Ответы выведены в консоль (F12)');
-            } else {
-                alert('На этой странице нет загадок. Перейдите на level2.html');
+            if (confirm('Полный сброс ВСЕХ этапов. Продолжить?')) {
+                localStorage.clear();
+                alert('✅ Полный сброс выполнен. Страница будет перезагружена.');
+                location.reload();
             }
         };
-        // Показать прогресс
+
+        // --- Показать ответы на загадки (в alert) ---
+        document.getElementById('adminShowAnswers').onclick = () => {
+            if (typeof riddles !== 'undefined') {
+                let answersText = "📖 ОТВЕТЫ НА ЗАГАДКИ (2 этап):\n\n";
+                riddles.forEach((r, i) => {
+                    answersText += `${i+1}. ${r.text}\n   → "${r.correct}"\n\n`;
+                });
+                alert(answersText);
+            } else {
+                alert('На этой странице нет загадок. Перейдите на level2.html, чтобы увидеть ответы.');
+            }
+        };
+
+        // --- Показать общий прогресс (в alert) ---
         document.getElementById('adminShowProgress').onclick = () => {
             const level1 = localStorage.getItem('level1_complete') === 'true';
-            const riddlesSolved = (typeof solvedStatus !== 'undefined') ? solvedStatus.filter(v=>v).length : 'N/A';
+            let riddlesSolvedText = "недоступно";
+            let totalRiddles = "?";
+            if (typeof riddles !== 'undefined') {
+                const solvedStatus = JSON.parse(localStorage.getItem('riddlesProgress') || '[]');
+                const solvedCount = solvedStatus.filter(v => v === true).length;
+                riddlesSolvedText = `${solvedCount} из ${riddles.length}`;
+                totalRiddles = riddles.length;
+            }
             const points = parseInt(localStorage.getItem('clickerPoints')) || 0;
             const clickPower = parseInt(localStorage.getItem('clickPower')) || 1;
             const auto = parseInt(localStorage.getItem('autoClickers')) || 0;
             const gift = localStorage.getItem('giftBought') === 'true';
-            console.clear();
-            console.log('%c=== ТЕКУЩИЙ ПРОГРЕСС ===', 'color: #3f51b5; font-size: 14px;');
-            console.log(`1 этап (гранит): ${level1 ? 'пройден ✅' : 'не пройден ❌'}`);
-            console.log(`2 этап (загадки): решено ${riddlesSolved} из ${typeof riddles !== 'undefined' ? riddles.length : '?'}`);
-            console.log(`3 этап: очки=${points}, сила клика=${clickPower}, автокликеры=${auto}, подарок=${gift ? 'куплен' : 'не куплен'}`);
-            alert('Прогресс в консоли (F12)');
+
+            let progressMsg = "📊 ОБЩИЙ ПРОГРЕСС КВЕСТА 📊\n\n";
+            progressMsg += `1️⃣ Первый этап (гранит): ${level1 ? '✅ ПРОЙДЕН' : '❌ НЕ ПРОЙДЕН'}\n`;
+            progressMsg += `2️⃣ Второй этап (загадки): решено ${riddlesSolvedText}\n`;
+            progressMsg += `3️⃣ Третий этап (кликер):\n`;
+            progressMsg += `   🍰 Очки: ${points}\n`;
+            progressMsg += `   ⚡ Сила клика: +${clickPower}\n`;
+            progressMsg += `   🤖 Автокликеры: ${auto} (дают ${auto}/сек)\n`;
+            progressMsg += `   🎁 Секретный подарок: ${gift ? 'КУПЛЕН ✅' : 'НЕ КУПЛЕН ❌'}\n`;
+            alert(progressMsg);
         };
-        // Читы для кликера
+
+        // --- Читы для кликера ---
         document.getElementById('addPointsBtn').onclick = () => {
             let val = parseInt(document.getElementById('cheatPoints').value);
             if (isNaN(val)) val = 0;
             let cur = parseInt(localStorage.getItem('clickerPoints')) || 0;
             localStorage.setItem('clickerPoints', cur + val);
-            alert(`Добавлено ${val} очков. Обновите страницу кликера, чтобы увидеть изменения.`);
+            alert(`💰 Добавлено ${val} очков. Обновите страницу кликера, чтобы увидеть изменения.`);
         };
         document.getElementById('addClickPowerBtn').onclick = () => {
             let val = parseInt(document.getElementById('cheatClickPower').value);
@@ -112,7 +126,7 @@
             let upgradeCount = parseInt(localStorage.getItem('clickUpgradeCount')) || 0;
             localStorage.setItem('clickPower', cur + val);
             localStorage.setItem('clickUpgradeCount', upgradeCount + val);
-            alert(`Сила клика увеличена на ${val}. Обновите страницу кликера.`);
+            alert(`⚡ Сила клика увеличена на ${val}. Обновите страницу кликера.`);
         };
         document.getElementById('addAutoBtn').onclick = () => {
             let val = parseInt(document.getElementById('cheatAuto').value);
@@ -121,34 +135,46 @@
             let upgradeCount = parseInt(localStorage.getItem('autoUpgradeCount')) || 0;
             localStorage.setItem('autoClickers', cur + val);
             localStorage.setItem('autoUpgradeCount', upgradeCount + val);
-            alert(`Добавлено ${val} автокликеров. Обновите страницу кликера.`);
+            alert(`🤖 Добавлено ${val} автокликеров. Обновите страницу кликера.`);
         };
         document.getElementById('unlockGiftBtn').onclick = () => {
             localStorage.setItem('giftBought', 'true');
-            alert('Подарок открыт! На странице кликера появится сообщение о подарке за картиной.');
+            alert('🎁 Подарок открыт! На странице кликера появится сообщение о подарке за картиной.');
         };
-        // Сброс по этапам
+
+        // --- Сброс по этапам ---
         document.getElementById('adminResetLevel1').onclick = () => {
-            localStorage.removeItem('level1_complete');
-            alert('Первый этап сброшен. Перезагрузите страницу.');
-            location.reload();
+            if (confirm('Сбросить первый этап (загадку "Гранит")?')) {
+                localStorage.removeItem('level1_complete');
+                alert('Первый этап сброшен. Страница перезагрузится.');
+                location.reload();
+            }
         };
         document.getElementById('adminResetRiddles').onclick = () => {
-            localStorage.removeItem('riddlesProgress');
-            alert('Загадки сброшены. Перезагрузите страницу.');
-            location.reload();
+            if (confirm('Сбросить прогресс загадок (второй этап)?')) {
+                localStorage.removeItem('riddlesProgress');
+                alert('Загадки сброшены. Страница перезагрузится.');
+                location.reload();
+            }
         };
         document.getElementById('adminResetClicker').onclick = () => {
-            localStorage.removeItem('clickerPoints');
-            localStorage.removeItem('clickPower');
-            localStorage.removeItem('autoClickers');
-            localStorage.removeItem('clickUpgradeCount');
-            localStorage.removeItem('autoUpgradeCount');
-            localStorage.removeItem('giftBought');
-            alert('Кликер сброшен. Перезагрузите страницу кликера.');
-            if (window.location.pathname.includes('clicker.html')) location.reload();
+            if (confirm('Сбросить весь прогресс кликера (очки, улучшения, подарок)?')) {
+                localStorage.removeItem('clickerPoints');
+                localStorage.removeItem('clickPower');
+                localStorage.removeItem('autoClickers');
+                localStorage.removeItem('clickUpgradeCount');
+                localStorage.removeItem('autoUpgradeCount');
+                localStorage.removeItem('giftBought');
+                alert('Кликер сброшен.');
+                if (window.location.pathname.includes('clicker.html')) {
+                    location.reload();
+                } else {
+                    alert('Перейдите на страницу clicker.html и обновите её, чтобы изменения вступили в силу.');
+                }
+            }
         };
-        // Экспорт/Импорт
+
+        // --- Экспорт/Импорт ---
         document.getElementById('adminExport').onclick = () => {
             const data = {
                 level1_complete: localStorage.getItem('level1_complete') === 'true',
@@ -167,7 +193,7 @@
             a.download = `quest_backup_${Date.now()}.json`;
             a.click();
             URL.revokeObjectURL(a.href);
-            alert('Прогресс сохранён в файл.');
+            alert('💾 Прогресс сохранён в файл.');
         };
         document.getElementById('adminImport').onclick = () => {
             const input = document.createElement('input');
@@ -190,10 +216,10 @@
                         if (d.autoUpgradeCount) localStorage.setItem('autoUpgradeCount', d.autoUpgradeCount);
                         if (d.giftBought) localStorage.setItem('giftBought', 'true');
                         if (d.customMessengerUrl) localStorage.setItem('customMessengerUrl', d.customMessengerUrl);
-                        alert('Импорт выполнен. Перезагрузка...');
+                        alert('📂 Импорт выполнен. Страница перезагрузится.');
                         location.reload();
                     } catch(err) {
-                        alert('Ошибка: неверный файл');
+                        alert('Ошибка: неверный формат файла');
                     }
                 };
                 reader.readAsText(file);
@@ -202,50 +228,37 @@
         };
     };
 
-    // ========== СКРЫТЫЙ ВЫЗОВ НА ТЕЛЕФОНЕ ==========
-    // Долгое нажатие (3 секунды) на заголовок h1 открывает админ-панель
+    // ========== СКРЫТЫЙ ВЫЗОВ НА ТЕЛЕФОНЕ (8 секунд) ==========
     function setupHiddenTrigger() {
         const headers = document.querySelectorAll('h1');
         if (headers.length === 0) return;
         let touchTimer = null;
         headers.forEach(h1 => {
-            h1.addEventListener('touchstart', (e) => {
+            const startTimer = () => {
                 touchTimer = setTimeout(() => {
                     if (window.adminMenu) {
                         window.adminMenu();
-                        alert('🔧 Админ-панель открыта (долгое нажатие)');
+                        alert('🔧 Админ-панель открыта (долгое нажатие 8 секунд)');
                     }
                     touchTimer = null;
-                }, 8000);
-            });
-            h1.addEventListener('touchend', () => {
+                }, 8000); // 8 секунд
+            };
+            const clearTimer = () => {
                 if (touchTimer) clearTimeout(touchTimer);
-            });
-            h1.addEventListener('touchcancel', () => {
-                if (touchTimer) clearTimeout(touchTimer);
-            });
-            // Для мыши (тестирование на ПК) – тоже долгое нажатие
-            h1.addEventListener('mousedown', () => {
-                touchTimer = setTimeout(() => {
-                    if (window.adminMenu) {
-                        window.adminMenu();
-                        alert('🔧 Админ-панель открыта (долгое нажатие)');
-                    }
-                    touchTimer = null;
-                }, 8000);
-            });
-            h1.addEventListener('mouseup', () => {
-                if (touchTimer) clearTimeout(touchTimer);
-            });
+            };
+            h1.addEventListener('touchstart', startTimer);
+            h1.addEventListener('touchend', clearTimer);
+            h1.addEventListener('touchcancel', clearTimer);
+            h1.addEventListener('mousedown', startTimer);
+            h1.addEventListener('mouseup', clearTimer);
         });
     }
 
-    // Инициализация после загрузки DOM
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', setupHiddenTrigger);
     } else {
         setupHiddenTrigger();
     }
 
-    console.log('Админ-панель готова. Вызов: adminMenu() или долгое нажатие на заголовок (3 сек)');
+    console.log('Админ-панель загружена. Вызов: adminMenu() или долгое нажатие 8 сек на заголовок H1');
 })();
