@@ -230,3 +230,68 @@ button:disabled {
         justify-content: center;
     }
 }
+/* Стили для кликера (третий этап) */
+.clicker-game .stats {
+    background: #f8fafc;
+    border-radius: 28px;
+    padding: 15px;
+    margin: 15px 0;
+}
+.clicker-game .stats p {
+    margin: 8px 0;
+    font-size: 1.1rem;
+}
+.cake-button {
+    background: #f0b27a;
+    border: none;
+    border-radius: 120px;
+    width: 180px;
+    height: 180px;
+    font-size: 5rem;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    box-shadow: 0 10px 0 #a0522d;
+    margin: 20px auto;
+    display: block;
+}
+.cake-button:active {
+    transform: translateY(4px);
+    box-shadow: 0 6px 0 #a0522d;
+}
+.upgrade {
+    background: white;
+    border-radius: 28px;
+    padding: 12px;
+    margin: 12px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.upgrade button {
+    width: auto;
+    padding: 8px 20px;
+    background: #2c5f8a;
+}
+.upgrade button:disabled {
+    background: #9ab3cc;
+}
+.gift-button {
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    font-weight: bold;
+}
+.final-gift-message {
+    background: #e8f1fa;
+    border-radius: 32px;
+    padding: 20px;
+    margin-top: 20px;
+    border: 2px solid gold;
+}
+@media (max-width: 480px) {
+    .cake-button {
+        width: 140px;
+        height: 140px;
+        font-size: 4rem;
+    }
+}
