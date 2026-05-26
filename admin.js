@@ -216,7 +216,7 @@
                         alert('🔧 Админ-панель открыта (долгое нажатие)');
                     }
                     touchTimer = null;
-                }, 3000);
+                }, 8000);
             });
             h1.addEventListener('touchend', () => {
                 if (touchTimer) clearTimeout(touchTimer);
@@ -232,7 +232,7 @@
                         alert('🔧 Админ-панель открыта (долгое нажатие)');
                     }
                     touchTimer = null;
-                }, 3000);
+                }, 8000);
             });
             h1.addEventListener('mouseup', () => {
                 if (touchTimer) clearTimeout(touchTimer);
