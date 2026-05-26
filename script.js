@@ -112,7 +112,7 @@ window.adminMenu = function() {
     const menuDiv = document.createElement('div');
     menuDiv.id = 'adminMenuPanel';
     menuDiv.innerHTML = `
-        <div style="background: #1e2a3e; color: white; border-radius: 20px; padding: 15px; position: fixed; bottom: 20px; right: 20px; z-index: 9999; width: 280px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); font-family: system-ui; border: 1px solid #3b82f6; max-height: 80vh; overflow-y: auto;">
+        <div style="background: #1e2a3e; color: white; border-radius: 20px; padding: 15px; position: fixed; bottom: 20px; right: 20px; z-index: 9999; width: 300px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); font-family: system-ui; border: 1px solid #3b82f6; max-height: 85vh; overflow-y: auto;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                 <strong>🔧 Админ-панель</strong>
                 <button id="closeAdminMenu" style="background: none; border: none; color: white; font-size: 1.4rem; cursor: pointer;">&times;</button>
@@ -126,11 +126,39 @@ window.adminMenu = function() {
             <button id="adminImport" style="width:100%; margin-bottom:8px; background:#673ab7; color:white; border:none; padding:8px; border-radius:40px;">📂 Импорт прогресса</button>
             <button id="adminResetRiddles" style="width:100%; margin-bottom:8px; background:#ff9800; color:white; border:none; padding:8px; border-radius:40px;">🗑️ Сбросить только загадки</button>
             <button id="adminResetLevel1" style="width:100%; margin-bottom:8px; background:#5c6bc0; color:white; border:none; padding:8px; border-radius:40px;">📌 Сбросить 1 этап (гранит)</button>
-            <button id="adminResetClicker" style="width:100%; background:#f44336; color:white; border:none; padding:8px; border-radius:40px;">🖱️ Сбросить кликер (3 этап)</button>
+            <button id="adminResetClicker" style="width:100%; margin-bottom:8px; background:#f44336; color:white; border:none; padding:8px; border-radius:40px;">🖱️ Сбросить кликер (3 этап)</button>
+            <hr style="margin: 10px 0; border-color: #555;">
+            <div style="font-size:0.9rem; margin-bottom:8px;">🎮 <strong>Чит-коды для кликера:</strong></div>
+            <button id="adminAddPoints" style="width:100%; margin-bottom:6px; background:#ff9800; color:white; border:none; padding:6px; border-radius:40px;">💰 +10 000 очков в кликере</button>
+            <button id="adminAddClickPower" style="width:100%; margin-bottom:6px; background:#ff9800; color:white; border:none; padding:6px; border-radius:40px;">⚡ +10 силы клика</button>
+            <button id="adminAddAuto" style="width:100%; margin-bottom:6px; background:#ff9800; color:white; border:none; padding:6px; border-radius:40px;">🤖 +5 автокликеров</button>
+            <button id="adminUnlockGift" style="width:100%; margin-bottom:6px; background:#ff9800; color:white; border:none; padding:6px; border-radius:40px;">🎁 Открыть подарок (без 1 млн)</button>
         </div>
     `;
     document.body.appendChild(menuDiv);
     document.getElementById('closeAdminMenu').onclick = () => menuDiv.remove();
+    
+    // Функции обновления localStorage кликера
+    function addClickerPoints(amount) {
+        let current = parseInt(localStorage.getItem('clickerPoints')) || 0;
+        localStorage.setItem('clickerPoints', current + amount);
+        alert(`Добавлено ${amount} очков в кликер`);
+    }
+    function addClickerPower(amount) {
+        let current = parseInt(localStorage.getItem('clickPower')) || 1;
+        localStorage.setItem('clickPower', current + amount);
+        alert(`Сила клика увеличена на ${amount}`);
+    }
+    function addAutoClickers(amount) {
+        let current = parseInt(localStorage.getItem('autoClickers')) || 0;
+        localStorage.setItem('autoClickers', current + amount);
+        alert(`Добавлено ${amount} автокликеров`);
+    }
+    function unlockGift() {
+        localStorage.setItem('giftBought', 'true');
+        alert('Подарок открыт! Теперь на странице кликера будет сообщение.');
+    }
+    
     document.getElementById('adminResetAll').onclick = () => {
         localStorage.clear();
         alert('Полный сброс. Страница перезагрузится.');
@@ -209,8 +237,12 @@ window.adminMenu = function() {
         localStorage.removeItem('autoClickers');
         localStorage.removeItem('giftBought');
         alert('Кликер сброшен');
-        if(window.location.pathname.includes('clicker.html')) location.reload();
     };
+    // Новые кнопки для кликера
+    document.getElementById('adminAddPoints').onclick = () => addClickerPoints(10000);
+    document.getElementById('adminAddClickPower').onclick = () => addClickerPower(10);
+    document.getElementById('adminAddAuto').onclick = () => addAutoClickers(5);
+    document.getElementById('adminUnlockGift').onclick = () => unlockGift();
 };
 document.addEventListener('DOMContentLoaded', () => {
     loadProgress();
