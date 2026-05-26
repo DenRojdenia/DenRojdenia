@@ -92,7 +92,7 @@
             <button id="buyAutoUpgrade">Купить</button>
         </div>
         <div class="upgrade">
-            <span>🎁 СЕКРЕТНЫЙ ПОДАРОК — цена: 1 000 000 🎁</span>
+            <span>🎁 СЕКРЕТНЫЙ ПОДАРОК — цена: 100 000 🎁</span>
             <button id="buyGift" class="gift-button">Купить подарок</button>
         </div>
 
@@ -100,7 +100,7 @@
             <h2>🎉 С днём рождения! 🎉</h2>
             <p>У тебя золотые руки, и мой подарок подчёркивает это.</p>
             <p>🔑 <strong>Подарок за любой картиной в доме!</strong> 🔑</p>
-            <p>🍰 Спасибо за игру! 🍰</p>
+            <p></p>
         </div>
     </div>
 </div>
@@ -201,13 +201,13 @@
 
     // Покупка секретного подарка
     buyGiftBtn.addEventListener('click', () => {
-        if (points >= 1000000 && !giftBought) {
-            points -= 1000000;
+        if (points >= 100000 && !giftBought) {
+            points -= 100000;
             giftBought = true;
             updateUI();
             alert('🎁 Ты открыл секретный подарок! Смотри ниже 🎁');
         } else {
-            alert('Нужно 1 000 000 очков или подарок уже куплен');
+            alert('Нужно 100 000 очков или подарок уже куплен');
         }
     });
 
