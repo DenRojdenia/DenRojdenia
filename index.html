@@ -20,7 +20,7 @@
         </div>
     </div>
     <script>
-        const correctAnswer = "гранит";  // все проверяется через toLowerCase()
+        const correctAnswer = "гранит";
         const checkBtn = document.getElementById('checkBtn');
         const answerInput = document.getElementById('answerInput');
         const messageDiv = document.getElementById('message');
@@ -52,57 +52,7 @@
             checkBtn.disabled = true;
             answerInput.disabled = true;
         }
-
-        // ----- АДМИН-МЕНЮ -----
-        window.adminMenu = function() {
-            const oldMenu = document.getElementById('adminMenuPanel');
-            if (oldMenu) oldMenu.remove();
-
-            const menuDiv = document.createElement('div');
-            menuDiv.id = 'adminMenuPanel';
-            menuDiv.innerHTML = `
-                <div style="background: #1e2a3e; color: white; border-radius: 20px; padding: 15px; position: fixed; bottom: 20px; right: 20px; z-index: 9999; width: 260px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); font-family: system-ui; border: 1px solid #3b82f6;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <strong style="font-size: 1rem;">🔧 Админ-панель</strong>
-                        <button id="closeAdminMenu" style="background: none; border: none; color: white; font-size: 1.4rem; cursor: pointer;">&times;</button>
-                    </div>
-                    <button id="adminResetAll" style="width: 100%; margin-bottom: 8px; background: #c62828; color: white; border: none; padding: 8px; border-radius: 40px; cursor: pointer;">🔄 Сбросить ВСЁ (1+2 этап)</button>
-                    <button id="adminShowAnswers" style="width: 100%; margin-bottom: 8px; background: #2c5f8a; color: white; border: none; padding: 8px; border-radius: 40px; cursor: pointer;">📖 Показать ответы (консоль)</button>
-                    <button id="adminResetRiddles" style="width: 100%; margin-bottom: 8px; background: #ff9800; color: white; border: none; padding: 8px; border-radius: 40px; cursor: pointer;">🗑️ Сбросить только загадки (2 этап)</button>
-                    <button id="adminResetLevel1" style="width: 100%; background: #5c6bc0; color: white; border: none; padding: 8px; border-radius: 40px; cursor: pointer;">📌 Сбросить 1 этап (гранит)</button>
-                </div>
-            `;
-            document.body.appendChild(menuDiv);
-
-            document.getElementById('closeAdminMenu').onclick = () => menuDiv.remove();
-            document.getElementById('adminResetAll').onclick = () => {
-                localStorage.removeItem('level1_complete');
-                localStorage.removeItem('riddlesProgress');
-                alert('Полный сброс выполнен. Страница перезагрузится.');
-                location.reload();
-            };
-            document.getElementById('adminShowAnswers').onclick = () => {
-                if (typeof riddles !== 'undefined') {
-                    console.clear();
-                    console.log('%c=== ОТВЕТЫ НА ЗАГАДКИ (2 этап) ===', 'color: #2c5f8a; font-size: 14px;');
-                    riddles.forEach((r, i) => console.log(`${i+1}: ${r.text} -> "${r.correct}"`));
-                    alert('Ответы выведены в консоль (F12)');
-                } else {
-                    alert('На этой странице нет списка загадок. Перейдите на level2.html');
-                }
-            };
-            document.getElementById('adminResetRiddles').onclick = () => {
-                localStorage.removeItem('riddlesProgress');
-                alert('Прогресс загадок (2 этап) сброшен. Перезагрузите страницу, если вы на level2.html');
-                if (window.location.pathname.includes('level2.html')) location.reload();
-            };
-            document.getElementById('adminResetLevel1').onclick = () => {
-                localStorage.removeItem('level1_complete');
-                alert('Первый этап сброшен. Перезагрузите страницу.');
-                location.reload();
-            };
-        };
-        console.log('Админ-меню готово. Введите в консоли: adminMenu()');
     </script>
+    <script src="admin.js"></script>
 </body>
 </html>
