@@ -1,1 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Третий этап | Кликер </title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* дополнительные стили для кликера */
+        .clicker-game {
+            text-align: center;
+        }
+        .cake-button {
+            background: #f0b27a;
+            border: none;
+            border-radius: 120px;
+            width: 200px;
+            height: 200px;
+            font-size: 6rem;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+            box-shadow: 0 10px 0 #a0522d;
+            margin: 20px auto;
+            display: block;
+        }
+        .cake-button:active {
+            transform: translateY(4px);
+            box-shadow: 0 6px 0 #a0522d;
+        }
+        .stats {
+            background: #f8fafc;
+            border-radius: 28px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .stats p {
+            font-size: 1.3rem;
+            margin: 8px 0;
+        }
+        .upgrade {
+            background: white;
+            border-radius: 28px;
+            padding: 12px;
+            margin: 12px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .upgrade button {
+            width: auto;
+            padding: 8px 20px;
+            background: #2c5f8a;
+            margin: 0;
+        }
+        .upgrade button:disabled {
+            background: #9ab3cc;
+        }
+        .gift-button {
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .final-gift-message {
+            background: #e8f1fa;
+            border-radius: 32px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 2px solid gold;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card clicker-game">
+        <h1>🎂 Торт-кликер 🎂</h1>
+        <p class="subtitle">Кликай на торт, покупай улучшения и получи секретный подарок!</p>
+        <button class="cake-button" id="cakeBtn">🍰</button>
+        <div class="stats">
+            <p>🍰 Очки: <span id="points">0</span></p>
+            <p>⚡ Сила клика: +<span id="clickPower">1</span></p>
+            <p>🤖 Автокликеры: <span id="autoCount">0</span> (даёт <span id="autoPerSec">0</span>/сек)</p>
+        </div>
 
+        <div class="upgrade">
+            <span>🔨 Улучшить силу клика (+1) — цена: <span id="upgradeClickCost">10</span></span>
+            <button id="buyClickUpgrade">Купить</button>
+        </div>
+        <div class="upgrade">
+            <span>🤖 Купить автокликер (+1/сек) — цена: <span id="upgradeAutoCost">50</span></span>
+            <button id="buyAutoUpgrade">Купить</button>
+        </div>
+        <div class="upgrade">
+            <span>🎁 СЕКРЕТНЫЙ ПОДАРОК — цена: 1 000 000 🎁</span>
+            <button id="buyGift" class="gift-button">Купить подарок</button>
+        </div>
+
+        <div id="giftMessage" style="display: none;" class="final-gift-message">
+            <h2>🎉 С днём рождения! 🎉</h2>
+            <p>У тебя золотые руки, и мой подарок подчёркивает это.</p>
+            <p>🔑 <strong>Подарок за любой картиной в доме!</strong> 🔑</p>
+            <p>🍰 Спасибо за игру! 🍰</p>
+        </div>
+    </div>
+</div>
+<script>
+    // Загрузка данных из localStorage
+    let points = parseInt(localStorage.getItem('clickerPoints')) || 0;
+    let clickPower = parseInt(localStorage.getItem('clickPower')) || 1;
+    let autoClickers = parseInt(localStorage.getItem('autoClickers')) || 0;
+    let giftBought = localStorage.getItem('giftBought') === 'true';
+
+    // Цены на улучшения (растут с каждым)
+    let clickUpgradeCount = parseInt(localStorage.getItem('clickUpgradeCount')) || 0;
+    let autoUpgradeCount = parseInt(localStorage.getItem('autoUpgradeCount')) || 0;
+
+    function getClickUpgradeCost() {
+        return 10 + clickUpgradeCount * 5; // 10, 15, 20, ...
+    }
+    function getAutoUpgradeCost() {
+        return 50 + autoUpgradeCount * 25; // 50, 75, 100, ...
+    }
+
+    // Элементы DOM
+    const pointsSpan = document.getElementById('points');
+    const clickPowerSpan = document.getElementById('clickPower');
+    const autoCountSpan = document.getElementById('autoCount');
+    const autoPerSecSpan = document.getElementById('autoPerSec');
+    const upgradeClickCostSpan = document.getElementById('upgradeClickCost');
+    const upgradeAutoCostSpan = document.getElementById('upgradeAutoCost');
+    const cakeBtn = document.getElementById('cakeBtn');
+    const buyClickBtn = document.getElementById('buyClickUpgrade');
+    const buyAutoBtn = document.getElementById('buyAutoUpgrade');
+    const buyGiftBtn = document.getElementById('buyGift');
+    const giftMessageDiv = document.getElementById('giftMessage');
+
+    function updateUI() {
+        pointsSpan.innerText = points;
+        clickPowerSpan.innerText = clickPower;
+        autoCountSpan.innerText = autoClickers;
+        autoPerSecSpan.innerText = autoClickers;
+        upgradeClickCostSpan.innerText = getClickUpgradeCost();
+        upgradeAutoCostSpan.innerText = getAutoUpgradeCost();
+        if (giftBought) {
+            buyGiftBtn.disabled = true;
+            buyGiftBtn.innerText = 'Подарок уже куплен';
+            giftMessageDiv.style.display = 'block';
+        } else if (points >= 1000000) {
+            buyGiftBtn.disabled = false;
+        } else {
+            buyGiftBtn.disabled = true;
+        }
+        // Сохраняем всё в localStorage
+        localStorage.setItem('clickerPoints', points);
+        localStorage.setItem('clickPower', clickPower);
+        localStorage.setItem('autoClickers', autoClickers);
+        localStorage.setItem('clickUpgradeCount', clickUpgradeCount);
+        localStorage.setItem('autoUpgradeCount', autoUpgradeCount);
+        localStorage.setItem('giftBought', giftBought);
+    }
+
+    function addPoints(amount) {
+        points += amount;
+        updateUI();
+    }
+
+    // Клик по торту
+    cakeBtn.addEventListener('click', () => {
+        addPoints(clickPower);
+        // Анимация нажатия
+        cakeBtn.style.transform = 'scale(0.95)';
+        setTimeout(() => cakeBtn.style.transform = '', 100);
+    });
+
+    // Покупка улучшения силы клика
+    buyClickBtn.addEventListener('click', () => {
+        let cost = getClickUpgradeCost();
+        if (points >= cost) {
+            points -= cost;
+            clickPower++;
+            clickUpgradeCount++;
+            updateUI();
+        } else {
+            alert('Не хватает очков!');
+        }
+    });
+
+    // Покупка автокликера
+    buyAutoBtn.addEventListener('click', () => {
+        let cost = getAutoUpgradeCost();
+        if (points >= cost) {
+            points -= cost;
+            autoClickers++;
+            autoUpgradeCount++;
+            updateUI();
+        } else {
+            alert('Не хватает очков!');
+        }
+    });
+
+    // Покупка секретного подарка
+    buyGiftBtn.addEventListener('click', () => {
+        if (points >= 1000000 && !giftBought) {
+            points -= 1000000;
+            giftBought = true;
+            updateUI();
+            alert('🎁 Ты открыл секретный подарок! Смотри ниже 🎁');
+        } else {
+            alert('Нужно 1 000 000 очков или подарок уже куплен');
+        }
+    });
+
+    // Автоматическое начисление очков каждую секунду
+    setInterval(() => {
+        if (autoClickers > 0) {
+            points += autoClickers;
+            updateUI();
+        }
+    }, 1000);
+
+    // Инициализация UI
+    updateUI();
+
+    // Админ-функция для кликера (можно вызвать adminMenuClicker())
+    window.adminMenuClicker = function() {
+        console.log('Админ-меню кликера:');
+        console.log('  - сброс кликера: localStorage.removeItem("clickerPoints"); localStorage.removeItem("clickPower"); localStorage.removeItem("autoClickers"); localStorage.removeItem("clickUpgradeCount"); localStorage.removeItem("autoUpgradeCount"); localStorage.removeItem("giftBought"); location.reload();');
+        alert('Смотри консоль (F12) для команд сброса');
+    };
+    console.log('Кликер готов. Для сброса используйте админ-меню на level2.html или команду выше.');
+</script>
+</body>
+</html>
