@@ -1,8 +1,7 @@
-// ========== УНИВЕРСАЛЬНАЯ АДМИН-ПАНЕЛЬ (исправленная) ==========
+// ========== УНИВЕРСАЛЬНАЯ АДМИН-ПАНЕЛЬ (ИСПРАВЛЕНАЯ) ==========
 // Вызов: через консоль adminMenu() или долгое нажатие (8 сек) на заголовок h1
 
 (function() {
-    // Функция для создания/показа меню
     window.adminMenu = function() {
         const oldMenu = document.getElementById('adminMenuPanel');
         if (oldMenu) oldMenu.remove();
@@ -90,7 +89,8 @@
             let riddlesSolvedText = "недоступно";
             let totalRiddles = "?";
             if (typeof riddles !== 'undefined') {
-                const solvedStatus = JSON.parse(localStorage.getItem('riddlesProgress') || '[]');
+                const saved = localStorage.getItem('riddlesProgress');
+                const solvedStatus = saved ? JSON.parse(saved) : [];
                 const solvedCount = solvedStatus.filter(v => v === true).length;
                 riddlesSolvedText = `${solvedCount} из ${riddles.length}`;
                 totalRiddles = riddles.length;
@@ -157,19 +157,25 @@
                 location.reload();
             }
         };
+        
+        // ИСПРАВЛЕННЫЙ СБРОС КЛИКЕРА
         document.getElementById('adminResetClicker').onclick = () => {
             if (confirm('Сбросить весь прогресс кликера (очки, улучшения, подарок)?')) {
+                // Удаляем все ключи, связанные с кликером
                 localStorage.removeItem('clickerPoints');
                 localStorage.removeItem('clickPower');
                 localStorage.removeItem('autoClickers');
                 localStorage.removeItem('clickUpgradeCount');
                 localStorage.removeItem('autoUpgradeCount');
                 localStorage.removeItem('giftBought');
-                alert('Кликер сброшен.');
+                
+                alert('✅ Кликер полностью сброшен!');
+                
+                // Если мы находимся на странице кликера - перезагружаем её
                 if (window.location.pathname.includes('clicker.html')) {
                     location.reload();
                 } else {
-                    alert('Перейдите на страницу clicker.html и обновите её, чтобы изменения вступили в силу.');
+                    alert('Перейдите на страницу clicker.html и обновите её (F5), чтобы увидеть сброс.');
                 }
             }
         };
@@ -241,7 +247,7 @@
                         alert('🔧 Админ-панель открыта (долгое нажатие 8 секунд)');
                     }
                     touchTimer = null;
-                }, 8000); // 8 секунд
+                }, 8000);
             };
             const clearTimer = () => {
                 if (touchTimer) clearTimeout(touchTimer);
